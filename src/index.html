@@ -8,10 +8,12 @@
 <body>
   <script src="https://p.trellocdn.com/power-up.min.js"></script>
   <script>
+    const iconPath = `${window.location.protocol}//${window.location.host}/icons/rocket-fill.svg`;
     window.TrelloPowerUp.initialize({
       'list-actions': async function (t) {
         const list = await t.list('name', 'id', 'cards')
         return [{
+          icons: { dark: iconPath, light: iconPath },
           text: "Get Pending Payment List",
           callback: function (t) {
             const copyText = list.cards
