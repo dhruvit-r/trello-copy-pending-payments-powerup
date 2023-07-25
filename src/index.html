@@ -1,5 +1,42 @@
 <!DOCTYPE html>
 <html>
-  <head><meta charset="utf-8"></head>
-  <body><script src="https://p.trellocdn.com/power-up.min.js"></script><script src="js/client.js"></script></body>
+
+<head>
+  <meta charset="utf-8">
+</head>
+
+<body>
+  <script src="https://p.trellocdn.com/power-up.min.js"></script>
+  <script>
+    window.TrelloPowerUp.initialize({
+      'list-actions': async function (t) {
+        const list = await t.list('name', 'id', 'cards')
+        return [{
+          text: "Get Pending Payment List",
+          callback: function (t) {
+            const copyText = list.cards
+              .filter(card => card.labels.some(label => label.name === 'Payment Pending'))
+              .map(card => `- ${card.name}`)
+              .reduce((acc, card) => `${acc}${acc === '' ? '' : '\n'}${card}`, '');
+            const regex = /\[\$(\d+)\]/g;
+            const total = list.cards
+              .filter(card => card.labels.some(label => label.name === 'Payment Pending'))
+              .map(card => regex.exec(card.name))
+              .filter(match => match !== null && match.length > 1)
+              .map(match => parseInt(match[match.length - 1]))
+              .filter(amount => !isNaN(amount))
+              .reduce((acc, amount) => acc + amount, 0);
+            t.modal({
+              url: '/modal.html',
+              fullscreen: false,
+              title: 'Pending Payment List',
+              args: { text: copyText, total }
+            });
+          }
+        }];
+      }
+    });
+  </script>
+</body>
+
 </html>

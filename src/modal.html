@@ -1,0 +1,78 @@
+<html>
+
+<head>
+  <link rel="stylesheet" href="https://p.trellocdn.com/power-up.min.css">
+  <link rel="stylesheet" href="./css/modal.css">
+  <style>
+    #content {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: calc(100% - 30px);
+      height: calc(100% - 30px);
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+    }
+    #textArea {
+      flex: 1;
+      resize: none;
+      border-radius: 3px;
+      padding: 5px;
+      font-size: 14px;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+  <div id="content">
+    <textarea id="textArea" readonly></textarea>
+    <button id="totalButton" class="mod-primary" disabled style="display: none;"></button> 
+  </div>
+  <script src="https://p.trellocdn.com/power-up.min.js"></script>
+  <script>
+    // Init variables
+    const t = TrelloPowerUp.iframe();
+    const text = t.arg('text');
+    const total = t.arg('total');
+    const textArea = document.getElementById('textArea');
+    const totalButton = document.getElementById('totalButton');
+    // Set total
+    if (total) {
+      totalButton.style.display = 'block';
+      totalButton.innerText = `Total: $${total}`;
+    }
+    // Set text
+    textArea.value = text;
+    // Select all text in textarea
+    textArea.focus();
+    textArea.select();
+    // Close modal function
+    const closeModal = async (hasCopied) => {
+      if (hasCopied) {
+        await t.alert({
+          message: 'Copied to clipboard!',
+          display: 'info',
+          duration: 3
+        });
+      }
+      await t.closeModal();
+    };
+    // Event handlers
+    document.onkeydown = function(e) {
+      // Check if it is macOS
+      const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+      const initialKey = isMac ? e.metaKey : e.ctrlKey;
+      // Check if it is cmd + c
+      if (initialKey && e.keyCode == 67) {
+        closeModal(true);
+      }
+      // Check if escape key
+      if (e.keyCode == 27) {
+        closeModal(false);
+      }
+    };
+  </script>
+</body>
+
+</html>
