@@ -1,0 +1,23 @@
+{
+  "name": "trello-copy-pending-payments-powerup",
+  "version": "1.0.0",
+  "description": "Trello Power-Up to copy pending payments from one card to clipboard.",
+  "scripts": {
+    "build": "node build.js"
+  },
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dhruvit-r/trello-copy-pending-payments-powerup.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dhruvit-r/trello-copy-pending-payments-powerup/issues"
+  },
+  "homepage": "https://github.com/dhruvit-r/trello-copy-pending-payments-powerup#readme",
+  "dependencies": {
+    "esbuild": "0.18.16"
+  }
+}
