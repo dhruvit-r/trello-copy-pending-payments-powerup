@@ -8,35 +8,62 @@
 <body>
   <script src="https://p.trellocdn.com/power-up.min.js"></script>
   <script>
-    const iconPath = `${window.location.protocol}//${window.location.host}/icons/rocket-fill.svg`;
+    const iconPath = `https://trello-copy-pending-payments-powerup.dhruv.it/icons/rocket-fill.svg`;
     window.TrelloPowerUp.initialize({
       'list-actions': async function (t) {
         const list = await t.list('name', 'id', 'cards')
-        return [{
-          icons: { dark: iconPath, light: iconPath },
-          text: "Get Pending Payment List",
-          callback: function (t) {
-            const copyText = list.cards
-              .filter(card => card.labels.some(label => label.name === 'Payment Pending'))
-              .map(card => `- ${card.name}`)
-              .reduce((acc, card) => `${acc}${acc === '' ? '' : '\n'}${card}`, '');
-            const regex = /\[\$(\d+)\]/g;
-            const total = list.cards
-              .filter(card => card.labels.some(label => label.name === 'Payment Pending'))
-              .map(card => regex.exec(card.name))
-              .filter(match => match !== null && match.length > 1)
-              .map(match => parseInt(match[match.length - 1]))
-              .filter(amount => !isNaN(amount))
-              .reduce((acc, amount) => acc + amount, 0);
-            t.modal({
-              url: '/modal.html',
-              fullscreen: false,
-              title: 'Pending Payment List',
-              args: { text: copyText, total }
-            });
+        return [
+          {
+            icons: { dark: iconPath, light: iconPath },
+            text: "Get Pending Payment List",
+            callback: function (t) {
+              const copyText = list.cards
+                .filter(card => card.labels.some(label => label.name === 'Payment Pending'))
+                .map(card => `- ${card.name}`)
+                .reduce((acc, card) => `${acc}${acc === '' ? '' : '\n'}${card}`, '');
+              const regex = /\[\$(\d+)\]/g;
+              const total = list.cards
+                .filter(card => card.labels.some(label => label.name === 'Payment Pending'))
+                .map(card => regex.exec(card.name))
+                .filter(match => match !== null && match.length > 1)
+                .map(match => parseInt(match[match.length - 1]))
+                .filter(amount => !isNaN(amount))
+                .reduce((acc, amount) => acc + amount, 0);
+              t.modal({
+                url: '/modal.html',
+                fullscreen: false,
+                title: 'Pending Payment List',
+                args: { text: copyText, total }
+              });
+            }
+          },
+          {
+            icons: { dark: iconPath, light: iconPath },
+            text: "Mark all as \"Request Payment\"",
+            callback: async function (t) {
+              const cards = list.cards
+                .filter(card => card.labels.some(label => label.name === 'Payment Pending'));
+              const client = t.getRestApi()
+              const isAuthorized = await client.isAuthorized();
+              debugger
+              if (!isAuthorized) {
+                return t.popup({
+                  title: 'Authorize',
+                  url: '/authorize.html',
+                });
+              }
+              if (!isAuthorized) {
+                await client.authorize();
+              }
+              const promises = cards.map(card => client.addLabelToCard(card.id, 'Request Payment', 'green')); 
+            }
           }
-        }];
+        ];
       }
+    }, {
+      appKey: '29cac579f3589d843f36aab719898964',
+      appName: 'Get Pending Payments',
+      appAuthor: 'Dhruvit Raithatha'
     });
   </script>
 </body>

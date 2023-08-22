@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang=en>
+
+<head>
+  <meta charset=utf-8>
+  <title>Authorize</title>
+</head>
+
+<body>
+  <button type=button>Click to authorize</button>
+  <script src="https://p.trellocdn.com/power-up.min.js"></script>
+  <script>
+    var t = window.TrelloPowerUp.iframe({
+      appKey: '29cac579f3589d843f36aab719898964',
+      appName: 'Get Pending Payments',
+      appAuthor: 'Dhruvit Raithatha'
+    });
+    t.render(function () {
+      const b = document.querySelector('button')
+      b.addEventListener('click', function () {
+        debugger
+        t.getRestApi()
+          .authorize({ scope: 'read,write' })
+          .then(function (t) {
+            alert('Success!');
+          });
+      }, false);
+    });
+  </script>
+</body>
+
+</html>
